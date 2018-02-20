@@ -103,7 +103,7 @@
       (push i pos))
     (mapcar #'(lambda (x) (elt lst x)) (scramble pos))))
 
-xo
+
 (defun mean (&rest nums)
   (when (every #'numberp nums)
     (/ (reduce #'+ nums)
