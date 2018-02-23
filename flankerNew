@@ -111,45 +111,50 @@
  
 (p retrieve-rule
    "Retrieves a rule given a center orientation"
-   ?retrieval>
-     state  free
-     buffer empty
-
    =retrieval>
-     center =CENTER
+     kind        flanker-stimulus
+     center      =CENTER
 
    =goal>
-     isa    phase
-     step   retrieval
+     isa         phase
+     step        retrieval
 ==>
    +retrieval>
-     center =CENTER
-     kind   rule
+     isa         flanker-rule
+     kind        rule
+     center      =CENTER
+     
    +goal>
-     isa    phase
-     step   respond
+     isa         phase
+     step        respond
 )
 
 (p respond
    "Responds given a rule"
    =retrieval>
-     center   =CENTER
-     kind     rule
-     response =RES
-     
-   ?retrieval>
-     state    free
+     isa         flanker-rule
+     kind        rule
+     center      =CENTER
+     response    =RES
+
+   ?manual>
+     preparation free
+     processor   free
+     execution   free
 
    =goal>
-     isa      phase
-     step     retrieval
+     isa         phase
+     step        respond
 ==>
    +manual>
-     isa punch
-     finger index
-     hand =RES
+     isa         punch
+     finger      index
+     hand        =RES
    -goal>  
 ))
+     
+     
+     
      
      
      
