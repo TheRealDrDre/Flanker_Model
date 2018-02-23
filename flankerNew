@@ -1,0 +1,159 @@
+;;=======================================================
+;; Beginning Flanker Task Model Implemented with a Device
+;;=================
+;; Created by Micah Ketola Winter 2018
+;;=======================================================
+
+(clear-all)
+
+(define-model Flanker
+
+(sgp :esc                  t
+     :visual-activation    2
+     :ans                  0.1
+     :imaginal-activation  2.0
+     :bll                  0.1
+     :blc                  2.0
+     :mas                  1.0
+     :er                   t
+     :trace-detail         high
+     :auto-attend          t)
+
+;; Flanker Chunks
+(chunk-type (flanker-stimulus          (:include visual-object))
+            kind nature left center right)
+(chunk-type (flanker-screen            (:include visual-object))
+            kind phase)
+(chunk-type (flanker-stimulus-location (:include visual-location))
+            kind flanker)
+(chunk-type phase step)            
+
+(add-dm (I> isa chunk)
+        (I< isa chunk)
+        (rule isa chunk)
+        (stimulus isa chunk)
+        (flanker-screen isa chunk)
+        (flanker-stimulus isa chunk)
+        (done isa chunk))
+                   
+;; Rules for response
+(chunk-type flanker-rule kind center response)
+(add-dm (center-left isa      flanker-rule
+                     kind     rule
+                     center   I<
+                     response left)
+        (center-right isa     flanker-rule
+                     kind     rule
+                     center   I>
+                     response right))
+
+
+(p view-stim
+   "Views stimulus"
+   ?visual>
+     state       free
+
+   ?retrieval>
+     state       free
+     buffer      empty
+
+   ?visual-location>
+     state       free
+     
+   ?manual>
+     preparation free
+     processor   free
+     execution   free
+
+   ?goal>
+     state       free
+     buffer      empty
+==>
+   +visual-location>
+     kind        flanker-stimulus
+     :attended   nil
+   +goal>
+     isa         phase
+     step        encoding
+)
+
+(p encode-stim
+   "Encodes stimulus"
+   =visual>
+     isa         flanker-stimulus
+     left        =LEFT
+     center      =CENTER
+     right       =RIGHT
+
+   ?visual>
+     state       free
+
+   ?retrieval>
+     state       free
+     buffer      empty
+
+   ?manual>
+     preparation free
+     processor   free
+     execution   free
+
+   =goal>
+     isa         phase
+     step        encoding
+==>
+   +retrieval>
+     kind        flanker-stimulus
+     center      =CENTER
+   +goal>
+     isa         phase
+     step        retrieval
+)
+ 
+(p retrieve-rule
+   "Retrieves a rule given a center orientation"
+   ?retrieval>
+     state  free
+     buffer empty
+
+   =retrieval>
+     center =CENTER
+
+   =goal>
+     isa    phase
+     step   retrieval
+==>
+   +retrieval>
+     center =CENTER
+     kind   rule
+   +goal>
+     isa    phase
+     step   respond
+)
+
+(p respond
+   "Responds given a rule"
+   =retrieval>
+     center   =CENTER
+     kind     rule
+     response =RES
+     
+   ?retrieval>
+     state    free
+
+   =goal>
+     isa      phase
+     step     retrieval
+==>
+   +manual>
+     isa punch
+     finger index
+     hand =RES
+   -goal>  
+))
+     
+     
+     
+     
+
+
+
